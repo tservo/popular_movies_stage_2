@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.popularmovies.data.Movie;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 /*
  A lot of this code was inspired by the Touch Selector App (T12.04) in the course.
@@ -17,6 +20,9 @@ import com.squareup.picasso.Picasso;
 
 public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.ThumbnailViewHolder> {
     private static final String TAG = MovieItemsAdapter.class.getSimpleName();
+
+    //private final Context mContext;
+    private List<Movie> mMovieList;
 
     @NonNull
     @Override
@@ -40,22 +46,37 @@ public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.Th
     @Override
     public void onBindViewHolder(@NonNull ThumbnailViewHolder holder, int position) {
         Log.d(TAG,"#" + position);
+
+
+        Picasso.get().load(mMovieList.get(position).getThumbnail()).into(holder.movieThumb);
     }
 
     @Override
     public int getItemCount() {
-        return 10;
+        if (null == mMovieList) return 0;
+
+
+        return mMovieList.size();
+    }
+
+    /**
+        for now, get the list of movies into the view containers
+        this may change in the future
+        @param movieList list of Movie objects
+     */
+    public void getMovies(List<Movie> movieList) {
+        mMovieList = movieList;
     }
 
     class ThumbnailViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView mMovieThumb;
+        ImageView movieThumb;
 
         ThumbnailViewHolder(View itemView) {
             super(itemView);
 
-            mMovieThumb = itemView.findViewById(R.id.movie_thumb);
-            Picasso.get().load("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg").into(mMovieThumb);
+            movieThumb = itemView.findViewById(R.id.movie_thumb);
+
             
 
         }
