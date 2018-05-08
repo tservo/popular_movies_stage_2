@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="view_options">
+        <item>@string/popular_value</item>
+        <item>@string/top_rated_value</item>
+    </string-array>
+</resources>

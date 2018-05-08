@@ -7,9 +7,9 @@ public class Movie {
     private final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p";
     private final String THUMBNAIL_SIZE = "w185";
 
-    private String mTitle;
-    private String mPosterPath; // stores the poster's base location, subject to size parameters
-    private int mId;
+    private final String mTitle;
+    private final String mPosterPath; // stores the poster's base location, subject to size parameters
+    private final int mId;
 
     public Movie(int id, String title, String posterPath) {
         mId = id;

@@ -54,8 +54,6 @@ public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.Th
     @Override
     public int getItemCount() {
         if (null == mMovieList) return 0;
-
-
         return mMovieList.size();
     }
 
@@ -66,11 +64,12 @@ public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.Th
      */
     public void getMovies(List<Movie> movieList) {
         mMovieList = movieList;
+        notifyDataSetChanged();
     }
 
     class ThumbnailViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView movieThumb;
+        final ImageView movieThumb;
 
         ThumbnailViewHolder(View itemView) {
             super(itemView);

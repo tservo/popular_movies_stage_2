@@ -7,7 +7,11 @@
     android:orientation="vertical"
     >
 
-
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/movie_list_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/view_options" />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/movie_thumb_recyclerview"
         android:layout_width="match_parent"
