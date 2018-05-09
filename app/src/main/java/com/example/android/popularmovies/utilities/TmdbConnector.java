@@ -36,7 +36,7 @@ public class TmdbConnector {
      * from https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
      * @return can we connect?
      */
-    public static boolean isOnline() {
+    private static boolean isOnline() {
         try {
             int timeoutMs = 1500;
             final int HTTP = 80;
@@ -58,13 +58,10 @@ public class TmdbConnector {
     public static List<Movie> getPopularMovies() {
 
         // attempt to get the movies from the api call to "popular"
-        List<Movie> movieList = null;
-        try {
-            String json = getNetworkResponse(createMovieURL(POPULAR));
-            movieList = getMovieListFromJson(json);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<Movie> movieList;
+
+        String json = getNetworkResponse(createMovieURL(POPULAR));
+        movieList = getMovieListFromJson(json);
 
         return movieList;
     }
@@ -75,14 +72,10 @@ public class TmdbConnector {
      */
     public static List<Movie> getTopRatedMovies() {
         // attempt to get the movies from the api call to "top rated"
-        List<Movie> movieList = null;
-        try {
-            String json = getNetworkResponse(createMovieURL(TOP_RATED));
-            movieList = getMovieListFromJson(json);
+        List<Movie> movieList;
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String json = getNetworkResponse(createMovieURL(TOP_RATED));
+        movieList = getMovieListFromJson(json);
 
         return movieList;
     }
@@ -150,11 +143,12 @@ public class TmdbConnector {
      * this code is from T02.04 of the ud851-Exercises
      * @param url the URL to read
      * @return the response as a string
-     * @throws IOException couldn't read it
      */
-    private static String getNetworkResponse(URL url) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+    private static String getNetworkResponse(URL url) {
+        HttpURLConnection urlConnection = null;
         try {
+            urlConnection = (HttpURLConnection) url.openConnection();
+
             Log.d(TAG,"before calling "+url.toString());
 
             // attempt to get the stream of data and put it into a string.

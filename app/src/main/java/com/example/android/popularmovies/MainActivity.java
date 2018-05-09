@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.utilities.TmdbConnector;
@@ -20,11 +21,14 @@ import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements  AdapterView.OnItemSelectedListener,
+                    MovieItemsAdapter.MovieItemClickListener {
 
     private RecyclerView mMovieThumbRecyclerView;
     private MovieItemsAdapter mAdapter;
     private Spinner mSpinner;
+    private Toast mToast;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int GRID_ROWS = 2;
@@ -44,17 +48,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         mMovieThumbRecyclerView.setLayoutManager(layoutManager);
 
         // set up the adapter
-        mAdapter = new MovieItemsAdapter();
+        mAdapter = new MovieItemsAdapter(this);
         mMovieThumbRecyclerView.setAdapter(mAdapter);
 
         // set up the spinner
         mSpinner = findViewById(R.id.movie_list_spinner);
         mSpinner.setOnItemSelectedListener(this);
 
+        mToast = new Toast(this);
 
         Picasso.get().setLoggingEnabled(true);
     }
 
+    // ----------------------------------------
     // these methods allow the spinner to work
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -66,6 +72,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onNothingSelected(AdapterView<?> parent) {
         // default to popularity list
         new TMDBQueryTask().execute(getString(R.string.popular_value));
+    }
+
+    // -----------------------------------------
+    // this method implements the click listener for the view.
+    @Override
+    public void onMovieItemClick(Movie movie) {
+        CharSequence message = "Selected: " +
+                ((null == movie) ? "No movie selected" : movie.getTitle());
+
+        mToast = Toast.makeText(this,message,Toast.LENGTH_SHORT);
+        mToast.show();
     }
 
     /**
