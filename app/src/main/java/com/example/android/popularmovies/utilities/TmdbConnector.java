@@ -15,7 +15,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,26 @@ public class TmdbConnector {
     private static final String VERSION = "3";
     private static final String POPULAR = "movie/popular";
     private static final String TOP_RATED = "movie/top_rated";
+
+    /**
+     * Find out if we have a reliable connection to TMDB
+     * from https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
+     * @return can we connect?
+     */
+    public static boolean isOnline() {
+        try {
+            int timeoutMs = 1500;
+            final int HTTP = 80;
+            Socket sock = new Socket();
+            InetSocketAddress inetSocketAddress = new InetSocketAddress("api.themoviedb.org",HTTP);
+
+            sock.connect(inetSocketAddress,timeoutMs);
+            sock.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
     /**
      * Retrieve list of popular movies
@@ -68,9 +90,11 @@ public class TmdbConnector {
     /**
      * helper method to parse json into movie objects.
      * @param json the source data in json
-     * @return list of movie objects
+     * @return list of movie objects. if none, it should be of length 0.  null means network error.
      */
     private static List<Movie> getMovieListFromJson(String json) {
+        if (null == json ) return null; // got nothing, so have to return nothing.
+
         List<Movie> movieList = new ArrayList<>();
         try {
 
@@ -131,8 +155,12 @@ public class TmdbConnector {
     private static String getNetworkResponse(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
+            Log.d(TAG,"before calling "+url.toString());
+
             // attempt to get the stream of data and put it into a string.
+            if (!isOnline()) throw new IOException("Network is unreachable");
             InputStream in = urlConnection.getInputStream();
+            Log.d(TAG,"calling "+url.toString());
 
             Scanner scanner = new Scanner(in);
             scanner.useDelimiter("\\A");
@@ -145,6 +173,10 @@ public class TmdbConnector {
             } else {
                 return null;
             }
+        } catch(IOException e) {
+            e.printStackTrace();
+            Log.w(TAG,e.toString());
+            return null;
         } finally {
             urlConnection.disconnect();
         }

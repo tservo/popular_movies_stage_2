@@ -22,7 +22,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private ImageView mMovieThumb;
     private RecyclerView mMovieThumbRecyclerView;
     private MovieItemsAdapter mAdapter;
     private Spinner mSpinner;
@@ -69,7 +68,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         new TMDBQueryTask().execute(getString(R.string.popular_value));
     }
 
-
+    /**
+     *     https://stackoverflow.com/questions/44309241/warning-this-asynctask-class-should-be-static-or-leaks-might-occur
+     */
     class TMDBQueryTask extends AsyncTask<String,Void, List<Movie>> {
 
         private final String TAG = TMDBQueryTask.class.getSimpleName();
