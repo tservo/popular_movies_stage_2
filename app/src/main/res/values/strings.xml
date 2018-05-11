@@ -4,4 +4,9 @@
     <!-- spinner values -->
     <string name="popular_value">Most Popular</string>
     <string name="top_rated_value">Top Rated</string>
+
+    <!-- *******************
+        detail activity
+    ************************ -->
+    <string name="movie_title_label">Title:</string>
 </resources>

@@ -19,7 +19,10 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -86,6 +89,9 @@ public class TmdbConnector {
      * @return list of movie objects. if none, it should be of length 0.  null means network error.
      */
     private static List<Movie> getMovieListFromJson(String json) {
+        // this is how the JSON formats dates
+        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
         if (null == json ) return null; // got nothing, so have to return nothing.
 
         List<Movie> movieList = new ArrayList<>();
@@ -98,15 +104,34 @@ public class TmdbConnector {
             // make the movie objects here
             for (int i = 0; i < jsonMovies.length(); i++) {
 
+                // read from the JSON
                 JSONObject jsonMovieObject = jsonMovies.getJSONObject(i);
                 int movieId = jsonMovieObject.getInt("id");
+                double voteAverage = jsonMovieObject.getDouble("vote_average");
                 String title = jsonMovieObject.getString("title");
+                double popularity = jsonMovieObject.getDouble("popularity");
                 String posterPath = jsonMovieObject.getString("poster_path");
+                String backdropPath = jsonMovieObject.getString("backdrop_path");
+                String originalLangCode = jsonMovieObject.getString("original_language");
+                String originalTitle = jsonMovieObject.getString("original_title");
+                String overview = jsonMovieObject.getString("overview");
+                Date releaseDate = DATE_FORMAT.parse(jsonMovieObject.getString("release_date"));
 
-                movieList.add(new Movie(movieId,title,posterPath));
+                // create and add the Movie object to the list.
+                movieList.add( new Movie(   movieId,
+                                            voteAverage,
+                                            title,
+                                            popularity,
+                                            posterPath,
+                                            backdropPath,
+                                            originalLangCode,
+                                            originalTitle,
+                                            overview,
+                                            releaseDate
+                ));
 
             }
-        } catch (JSONException e) {
+        } catch (JSONException | ParseException e) {
             Log.e(TAG,e.getMessage());
             return null;
         }
@@ -172,7 +197,7 @@ public class TmdbConnector {
             Log.w(TAG,e.toString());
             return null;
         } finally {
-            urlConnection.disconnect();
+            if (null != urlConnection) urlConnection.disconnect();
         }
     }
 }

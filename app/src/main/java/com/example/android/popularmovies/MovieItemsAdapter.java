@@ -25,7 +25,6 @@ public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.Th
 
     final private MovieItemClickListener mOnClickListener;
     private List<Movie> mMovieList;
-    private Toast mToast;
 
     public interface MovieItemClickListener {
         void onMovieItemClick(Movie movie);

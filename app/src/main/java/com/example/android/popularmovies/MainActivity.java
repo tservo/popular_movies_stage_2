@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,11 +79,12 @@ public class MainActivity extends AppCompatActivity
     // this method implements the click listener for the view.
     @Override
     public void onMovieItemClick(Movie movie) {
-        CharSequence message = "Selected: " +
-                ((null == movie) ? "No movie selected" : movie.getTitle());
 
-        mToast = Toast.makeText(this,message,Toast.LENGTH_SHORT);
-        mToast.show();
+        // go over to the detail page
+        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+        // in here, we have to pass the movie over.
+        intent.putExtra("movie",movie);
+        startActivity(intent);
     }
 
     /**
