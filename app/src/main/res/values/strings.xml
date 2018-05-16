@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
-    <!-- spinner values -->
+    <!-- spinner values and keys for prefs-->
+    <string name="movie_list_key" translatable="false">movie_list</string>
     <string name="popular_value">Most Popular</string>
     <string name="top_rated_value">Top Rated</string>
 

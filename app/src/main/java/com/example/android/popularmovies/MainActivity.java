@@ -2,7 +2,9 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,11 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.utilities.DisplayHelper;
+import com.example.android.popularmovies.utilities.PreferencesHelper;
 import com.example.android.popularmovies.utilities.TmdbConnector;
 import com.squareup.picasso.Picasso;
 
@@ -24,7 +29,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements  AdapterView.OnItemSelectedListener,
-                    MovieItemsAdapter.MovieItemClickListener {
+                    MovieItemsAdapter.MovieItemClickListener,
+                    SharedPreferences.OnSharedPreferenceChangeListener {
 
     private RecyclerView mMovieThumbRecyclerView;
     private MovieItemsAdapter mAdapter;
@@ -32,8 +38,7 @@ public class MainActivity extends AppCompatActivity
     private Toast mToast;
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int GRID_ROWS = 2;
-    private static final int GRID_COLS = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         mMovieThumbRecyclerView = findViewById(R.id.movie_thumb_recyclerview);
 
         // make a grid layout manager to store items in a grid
-        GridLayoutManager layoutManager = new GridLayoutManager(this, GRID_COLS);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, DisplayHelper.calculateNoOfColumns(this));
         mMovieThumbRecyclerView.setLayoutManager(layoutManager);
 
         // set up the adapter
@@ -55,23 +60,68 @@ public class MainActivity extends AppCompatActivity
         // set up the spinner
         mSpinner = findViewById(R.id.movie_list_spinner);
         mSpinner.setOnItemSelectedListener(this);
+        initializeSpinner();
 
         mToast = new Toast(this);
 
         Picasso.get().setLoggingEnabled(true);
+
+        // pref manager setup
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        sp.registerOnSharedPreferenceChangeListener(this);
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Unregister VisualizerActivity as an OnPreferenceChangedListener to avoid any memory leaks.
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
     // ----------------------------------------
     // these methods allow the spinner to work
+
+    /**
+     * helper method to get the position in the spinner of the value
+     * @param value : string value to find
+     * @return spinner position
+     */
+    private int getPosition(String value) {
+        int count = mSpinner.getAdapter().getCount();
+        for(int i = 0; i < count; i++) {
+            if (value.equals(mSpinner.getItemAtPosition(i))) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    private void initializeSpinner() {
+        // pull in the value from prefs
+        String savedListValue = PreferencesHelper.getListingPreference(this);
+        mSpinner.setSelection(getPosition(savedListValue));
+
+        // and populate the screen.
+        new TMDBQueryTask().execute(savedListValue);
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = (String) parent.getItemAtPosition(position);
-        new TMDBQueryTask().execute(item);
+
+        // this will implicitly trigger the query to load
+        // in case we use
+        PreferencesHelper.setListingPreference(this,item);
+        //new TMDBQueryTask().execute(item);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        // default to popularity list
+        // this should never happen
         new TMDBQueryTask().execute(getString(R.string.popular_value));
     }
 
@@ -85,6 +135,15 @@ public class MainActivity extends AppCompatActivity
         // in here, we have to pass the movie over.
         intent.putExtra("movie",movie);
         startActivity(intent);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.movie_list_key))) {
+            String item = sharedPreferences.getString(key,getString(R.string.popular_value));
+            Log.d(TAG,"Shared preference: " + item);
+            new TMDBQueryTask().execute(item);
+        }
     }
 
     /**

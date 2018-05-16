@@ -101,6 +101,9 @@ public class Movie implements Parcelable {
         return thumbnailURL.toString();
     }
 
+    public String getOverview() {
+        return mOverview;
+    }
     /**
      * parcelable method
      * doesn't seem to do much - has to be overridden.

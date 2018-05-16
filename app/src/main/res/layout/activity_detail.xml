@@ -6,28 +6,33 @@
     android:layout_height="match_parent"
     tools:context=".DetailActivity">
 
-    <TextView
-        android:id="@+id/tv_movie_title_label"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/iv_movie_poster"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:text="@string/movie_title_label"
-        android:textSize="24sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/tv_movie_title"
-        app:layout_constraintEnd_toStartOf="@+id/tv_movie_title" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/colorPrimary" />
 
     <TextView
         android:id="@+id/tv_movie_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="@+id/tv_movie_description"
+        app:layout_constraintTop_toTopOf="@+id/iv_movie_poster"
         tools:text="Star Wars Next" />
 
     <android.support.constraint.Guideline
@@ -35,5 +40,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/tv_movie_description"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/iv_movie_poster"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_movie_poster"
+        tools:text="A standard description for a movie goes here." />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 </android.support.constraint.ConstraintLayout>

@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/movie_thumb"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="1dp"
         android:layout_marginEnd="1dp"
