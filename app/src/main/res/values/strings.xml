@@ -10,4 +10,6 @@
         detail activity
     ************************ -->
     <string name="movie_title_label">Title:</string>
+    <string name="original_title_label">Original Title:</string>
+    <string name="rating_label">Voter Rating:</string>
 </resources>

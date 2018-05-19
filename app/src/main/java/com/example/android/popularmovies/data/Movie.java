@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class Movie implements Parcelable {
@@ -87,6 +88,31 @@ public class Movie implements Parcelable {
      */
     public String getTitle() {
         return mTitle;
+    }
+
+    /**
+     *
+     * @return the movie's release year
+     */
+    public int getReleaseYear() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mReleaseDate);
+        return calendar.get(Calendar.YEAR);
+    }
+
+    /**
+     *
+     * @return the movie's original title
+     */
+    public String getOriginalTitle() {
+        return mOriginalTitle;
+    }
+
+    /**
+     * @return the movie's voter rating
+     */
+    public double getVoteAverage() {
+        return mVoteAverage;
     }
 
     /**

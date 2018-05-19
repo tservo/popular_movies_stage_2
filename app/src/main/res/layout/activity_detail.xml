@@ -10,11 +10,11 @@
         android:id="@+id/iv_movie_poster"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:adjustViewBounds="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/tv_movie_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -34,6 +34,33 @@
         app:layout_constraintStart_toStartOf="@+id/tv_movie_description"
         app:layout_constraintTop_toTopOf="@+id/iv_movie_poster"
         tools:text="Star Wars Next" />
+
+    <TextView
+        android:id="@+id/tv_original_title_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/original_title_label"
+        app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_movie_title" />
+
+    <TextView
+        android:id="@+id/tv_original_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.76"
+        app:layout_constraintStart_toStartOf="@+id/tv_original_title_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_original_title_label"
+        tools:text="Star Wars Original" />
+
+
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -53,9 +80,12 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/iv_movie_poster"
+        app:layout_constraintHorizontal_bias="0.72"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_movie_poster"
-        tools:text="A standard description for a movie goes here." />
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="A standard description for a movie goes here."
+        tools:layout_height="20dp"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline2"
@@ -63,4 +93,26 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/tv_rating_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/rating_label"
+        app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_original_title" />
+
+    <RatingBar
+        android:id="@+id/rb_voter_rating"
+        style="@style/Widget.AppCompat.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:stepSize=".1"
+        app:layout_constraintStart_toStartOf="@+id/tv_rating_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_rating_label"
+        tools:rating="4.6" />
 </android.support.constraint.ConstraintLayout>
