@@ -1,6 +1,5 @@
 package com.example.android.popularmovies.utilities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -22,7 +21,7 @@ public class PreferencesHelper {
 
     /**
      * returns the movie list preference as saved in sharedpreferences
-     * @param context
+     * @param context the context which handles the shared prefs
      * @return the listing value (or default to popular movies if no value)
      */
     public static String getListingPreference(Context context) {

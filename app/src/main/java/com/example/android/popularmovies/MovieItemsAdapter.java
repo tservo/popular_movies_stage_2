@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
 import com.squareup.picasso.Picasso;
@@ -52,9 +51,8 @@ public class MovieItemsAdapter extends RecyclerView.Adapter<MovieItemsAdapter.Th
         int movieThumbId = R.layout.movie_thumb_item;
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        boolean attachToRoot = false; // is this what we really want?
 
-        View view = layoutInflater.inflate(movieThumbId, parent, attachToRoot);
+        View view = layoutInflater.inflate(movieThumbId, parent, false);
 
         return new ThumbnailViewHolder(view);
     }

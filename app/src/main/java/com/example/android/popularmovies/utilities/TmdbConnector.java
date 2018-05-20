@@ -1,11 +1,9 @@
 package com.example.android.popularmovies.utilities;
 
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.popularmovies.BuildConfig;
-import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Movie;
 
 import org.json.JSONArray;
@@ -24,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class TmdbConnector {
@@ -90,7 +89,7 @@ public class TmdbConnector {
      */
     private static List<Movie> getMovieListFromJson(String json) {
         // this is how the JSON formats dates
-        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+        final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
         if (null == json ) return null; // got nothing, so have to return nothing.
 

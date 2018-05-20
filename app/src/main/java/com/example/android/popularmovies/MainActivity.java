@@ -1,6 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -12,8 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,8 +20,6 @@ import com.example.android.popularmovies.utilities.PreferencesHelper;
 import com.example.android.popularmovies.utilities.TmdbConnector;
 import com.squareup.picasso.Picasso;
 
-import java.lang.ref.WeakReference;
-import java.net.URL;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -35,7 +30,9 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mMovieThumbRecyclerView;
     private MovieItemsAdapter mAdapter;
     private Spinner mSpinner;
-    private Toast mToast;
+
+    private boolean mTwoPane; // hold whether or not we are going to use both list and detail view.
+    private int mPosition = RecyclerView.NO_POSITION; // so we can scroll
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -45,12 +42,14 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // do we have a large enough screen for the two pane layout?
+        mTwoPane = (findViewById(R.id.movie_detail_container) != null);
 
         // get our recyclerview
         mMovieThumbRecyclerView = findViewById(R.id.movie_thumb_recyclerview);
 
         // make a grid layout manager to store items in a grid
-        GridLayoutManager layoutManager = new GridLayoutManager(this, DisplayHelper.calculateNoOfColumns(this));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, DisplayHelper.calculateNoOfColumns(this, mMovieThumbRecyclerView));
         mMovieThumbRecyclerView.setLayoutManager(layoutManager);
 
         // set up the adapter
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity
         mSpinner.setOnItemSelectedListener(this);
         initializeSpinner();
 
-        mToast = new Toast(this);
 
         Picasso.get().setLoggingEnabled(true);
 
@@ -116,7 +114,6 @@ public class MainActivity extends AppCompatActivity
         // this will implicitly trigger the query to load
         // in case we use
         PreferencesHelper.setListingPreference(this,item);
-        //new TMDBQueryTask().execute(item);
     }
 
     @Override
@@ -129,12 +126,23 @@ public class MainActivity extends AppCompatActivity
     // this method implements the click listener for the view.
     @Override
     public void onMovieItemClick(Movie movie) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.ARG_MOVIE,movie);
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment)
+                    .commit();
 
-        // go over to the detail page
-        Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-        // in here, we have to pass the movie over.
-        intent.putExtra("movie",movie);
-        startActivity(intent);
+        } else {
+            // go over to the detail page
+            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+            // in here, we have to pass the movie over.
+            intent.putExtra(DetailFragment.ARG_MOVIE,movie);
+            startActivity(intent);
+        }
+
     }
 
     @Override

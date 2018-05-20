@@ -91,6 +91,13 @@ public class Movie implements Parcelable {
     }
 
     /**
+     * @return the release date.
+     */
+    public Date getReleaseDate() {
+        return mReleaseDate;
+    }
+
+    /**
      *
      * @return the movie's release year
      */
