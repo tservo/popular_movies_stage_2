@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity
     private Spinner mSpinner;
 
     private boolean mTwoPane; // hold whether or not we are going to use both list and detail view.
-    private int mPosition = RecyclerView.NO_POSITION; // so we can scroll
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity
         mMovieThumbRecyclerView = findViewById(R.id.movie_thumb_recyclerview);
 
         // make a grid layout manager to store items in a grid
-        GridLayoutManager layoutManager = new GridLayoutManager(this, DisplayHelper.calculateNoOfColumns(this, mMovieThumbRecyclerView));
+        GridLayoutManager layoutManager = new GridLayoutManager(this, DisplayHelper.calculateNoOfColumns(this, mTwoPane));
         mMovieThumbRecyclerView.setLayoutManager(layoutManager);
 
         // set up the adapter
@@ -68,6 +68,19 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // do our instance saving
+
+        // and pass to parent
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
