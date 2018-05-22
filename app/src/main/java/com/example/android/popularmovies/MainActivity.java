@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity
     private MovieItemsAdapter mAdapter;
     private Spinner mSpinner;
 
+    private Parcelable mThumbState; // hold the state of the movie thumb list
+
     private boolean mTwoPane; // hold whether or not we are going to use both list and detail view.
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // do we have a large enough screen for the two pane layout?
         mTwoPane = (findViewById(R.id.movie_detail_container) != null);
@@ -61,6 +65,10 @@ public class MainActivity extends AppCompatActivity
         mSpinner.setOnItemSelectedListener(this);
         initializeSpinner();
 
+        // restore the grid layout if possible
+        if (savedInstanceState != null) {
+            mThumbState = savedInstanceState.getParcelable("ListState");
+        }
 
         Picasso.get().setLoggingEnabled(true);
 
@@ -71,9 +79,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        mThumbState = mMovieThumbRecyclerView.getLayoutManager().onSaveInstanceState();
+
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         // do our instance saving
-
+        outState.putParcelable("ListState",mMovieThumbRecyclerView.getLayoutManager().onSaveInstanceState());
         // and pass to parent
         super.onSaveInstanceState(outState);
     }
@@ -208,6 +224,7 @@ public class MainActivity extends AppCompatActivity
 
             }
             mAdapter.getMovies(movieList);
+            mMovieThumbRecyclerView.getLayoutManager().onRestoreInstanceState(mThumbState);
         }
     }
 
