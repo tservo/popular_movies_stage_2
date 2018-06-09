@@ -12,4 +12,6 @@
     <string name="original_title_label">Original Title:</string>
     <string name="rating_label">Voter Rating:</string>
     <string name="release_date_label">Release Date:</string>
+
+    <string name="reviews_label">Reviews</string>
 </resources>

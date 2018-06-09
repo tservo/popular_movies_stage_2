@@ -1,10 +1,13 @@
 package com.example.android.popularmovies.utilities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.popularmovies.BuildConfig;
+import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.data.Review;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,6 +85,22 @@ public class TmdbConnector {
         return movieList;
     }
 
+    public static List<Review> getReviews(Context context) {
+        List<Review> reviewList;
+
+        /*
+        https://stackoverflow.com/questions/6349759/using-json-file-in-android-app-resources
+        this reads from the raw json resource file for reviews
+        will be replaced as necessary
+         */
+        InputStream inputStream = context.getResources().openRawResource(R.raw.reviews);
+        String json = new Scanner(inputStream).useDelimiter("\\A").next();
+        Log.d(TAG,"Review JSON Read: " + json);
+
+        reviewList = getReviewListFromJson(json);
+        return reviewList;
+    }
+
     /**
      * helper method to parse json into movie objects.
      * @param json the source data in json
@@ -136,6 +155,51 @@ public class TmdbConnector {
         }
 
         return movieList;
+    }
+
+    /**
+     * Helper method to retrieve list of movie reviews
+     * from JSON input.
+     * @param json source json
+     * @return list of reviews
+     */
+    private static List<Review> getReviewListFromJson(String json) {
+        if (null == json ) return null; // got nothing, so have to return nothing.
+
+        List<Review> reviewList = new ArrayList<>();
+
+        try {
+
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray jsonReviews = jsonObject.getJSONArray("results");
+            int movieId = jsonObject.getInt("id");
+
+            Log.d(TAG,String.valueOf(jsonReviews.length()));
+            // make the reviews objects here
+            for (int i = 0; i < jsonReviews.length(); i++) {
+
+                // read from the JSON
+                JSONObject jsonReviewObject = jsonReviews.getJSONObject(i);
+                String reviewId = jsonReviewObject.getString("id");
+                String author = jsonReviewObject.getString("author");
+                String content = jsonReviewObject.getString("content");
+                String url = jsonReviewObject.getString("url");
+
+
+                // create and add the Movie object to the list.
+                reviewList.add( new Review(   reviewId,
+                        movieId,
+                        author,
+                        content,
+                        url
+                ));
+
+            }
+        } catch (JSONException e) {
+            Log.e(TAG,e.getMessage());
+            return null;
+        }
+        return reviewList;
     }
 
     /**

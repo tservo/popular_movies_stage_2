@@ -17,12 +17,17 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
+import com.example.android.popularmovies.data.Review;
 import com.example.android.popularmovies.utilities.DisplayHelper;
 import com.example.android.popularmovies.utilities.PreferencesHelper;
 import com.example.android.popularmovies.utilities.TmdbConnector;
+import com.facebook.stetho.Stetho;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity
         implements  AdapterView.OnItemSelectedListener,
@@ -43,6 +48,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // add the stetho diagnostic tools
+        Stetho.initializeWithDefaults(this);
+        new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
+
+
         setContentView(R.layout.activity_main);
 
 
@@ -76,6 +89,8 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
+        List<Review> reviews = TmdbConnector.getReviews(this);
+        Log.d(TAG,reviews.toString());
     }
 
     @Override
