@@ -9,9 +9,17 @@
     <!-- *******************
         detail activity
     ************************ -->
+    <!-- movies -->
     <string name="original_title_label">Original Title:</string>
     <string name="rating_label">Voter Rating:</string>
     <string name="release_date_label">Release Date:</string>
 
+    <!-- reviews -->
     <string name="reviews_label">Reviews</string>
+    <string name="author_label">Author</string>
+    <string name="sample_author">moviefone78</string>
+    <string name="sample_content">A movie, that was very good at times and not so good at times.</string>
+
+    <!-- trailers -->
+    <string name="sample_trailer_name">Movie Detail 1</string>
 </resources>

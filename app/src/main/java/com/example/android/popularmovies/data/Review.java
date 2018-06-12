@@ -15,4 +15,12 @@ public class Review {
         this.content = content;
         this.url = url;
     }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getContent() {
+        return content;
+    }
 }

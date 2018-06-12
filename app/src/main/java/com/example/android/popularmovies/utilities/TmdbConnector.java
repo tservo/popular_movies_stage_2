@@ -35,6 +35,8 @@ public class TmdbConnector {
     private static final String VERSION = "3";
     private static final String POPULAR = "movie/popular";
     private static final String TOP_RATED = "movie/top_rated";
+    private static final String REVIEWS = "movie/%d/reviews"; // replace %d with actual movie id.
+    private static final String TRAILERS = "movie/%d/videos";
 
     /**
      * Find out if we have a reliable connection to TMDB
@@ -85,7 +87,7 @@ public class TmdbConnector {
         return movieList;
     }
 
-    public static List<Review> getReviews(Context context) {
+    public static List<Review> getReviews(Movie movie) {
         List<Review> reviewList;
 
         /*
@@ -93,11 +95,15 @@ public class TmdbConnector {
         this reads from the raw json resource file for reviews
         will be replaced as necessary
          */
-        InputStream inputStream = context.getResources().openRawResource(R.raw.reviews);
-        String json = new Scanner(inputStream).useDelimiter("\\A").next();
+        //InputStream inputStream = context.getResources().openRawResource(R.raw.reviews);
+        //String json = new Scanner(inputStream).useDelimiter("\\A").next();
+
+        String json = getNetworkResponse(createMovieURL( String.format(Locale.getDefault(),REVIEWS,movie.getId()) ));
         Log.d(TAG,"Review JSON Read: " + json);
 
         reviewList = getReviewListFromJson(json);
+
+
         return reviewList;
     }
 
@@ -225,6 +231,7 @@ public class TmdbConnector {
         }
         return url;
     }
+
 
     /**
      * Get the response from the server as a string

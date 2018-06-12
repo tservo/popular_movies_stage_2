@@ -89,8 +89,6 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         sp.registerOnSharedPreferenceChangeListener(this);
 
-        List<Review> reviews = TmdbConnector.getReviews(this);
-        Log.d(TAG,reviews.toString());
     }
 
     @Override
