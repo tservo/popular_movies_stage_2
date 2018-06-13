@@ -1,19 +1,47 @@
 package com.example.android.popularmovies.data;
 
-public class Trailer {
+import android.util.Log;
 
-    private final String id; // trailer id
-    private final int mId; // the movie id
-    private final String key; // video key
-    private final String name; // trailer name
-    private final String site; // site
-    private final int size; // video size
-    private final String type; // trailer type
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Trailer {
+    private static final String TAG = Trailer.class.getSimpleName();
+
+    private final String mId; // trailer id
+    private final int mMovieId; // the movie id
+    private final String mKey; // video key
+    private final String mName; // trailer name
+    private final String mSite; // site
+    private final int mSize; // video size
+    private final String mType; // trailer type
+
+    public static List<Trailer> createListFromJson(int movieId, JSONArray jsonTrailers) {
+        List<Trailer> trailerList = new ArrayList<>();
+
+        // read and add all trailers
+        for (int i = 0; i < jsonTrailers.length(); i++) {
+            try {
+                Trailer trailer = new Trailer(movieId, jsonTrailers.getJSONObject(i) );
+
+                trailerList.add(trailer);
+            } catch (JSONException e) {
+                // issue with the json, return null.
+                Log.w(TAG, e.getMessage());
+                return null;
+            }
+        }
+        return trailerList;
+    }
 
     /**
      * Constructor
      * @param id trailer id
-     * @param mId movie id
+     * @param movieId movie id
      * @param key video key
      * @param name trailer name
      * @param site video site
@@ -21,20 +49,20 @@ public class Trailer {
      * @param type trailer type
      */
     public Trailer(String id,
-                   int mId,
+                   int movieId,
                    String key,
                    String name,
                    String site,
                    int size,
                    String type
     ) {
-        this.id = id;
-        this.mId = mId;
-        this.key = key;
-        this.name = name;
-        this.site = site;
-        this.size = size;
-        this.type = type;
+        mId = id;
+        mMovieId = movieId;
+        mKey = key;
+        mName = name;
+        mSite = site;
+        mSize = size;
+        mType = type;
     }
 
     /**
@@ -42,7 +70,7 @@ public class Trailer {
      * @return name
      */
     public String getName() {
-        return name;
+        return mName;
     }
 
     /**
@@ -50,6 +78,19 @@ public class Trailer {
      * @return video size
      */
     public int getSize() {
-        return size;
+        return mSize;
+    }
+
+    /**
+     * private methods and constructors
+     */
+    private Trailer(int movieId, JSONObject jsonTrailerObject) throws JSONException {
+        mId = jsonTrailerObject.getString("id");
+        mMovieId = movieId;
+        mKey = jsonTrailerObject.getString("key");
+        mName = jsonTrailerObject.getString("name");
+        mSite = jsonTrailerObject.getString("site");
+        mSize = jsonTrailerObject.getInt("size");
+        mType = jsonTrailerObject.getString("type");
     }
 }

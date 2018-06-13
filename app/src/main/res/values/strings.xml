@@ -21,5 +21,6 @@
     <string name="sample_content">A movie, that was very good at times and not so good at times.</string>
 
     <!-- trailers -->
+    <string name="trailers_label">Trailers</string>
     <string name="sample_trailer_name">Movie Detail 1</string>
 </resources>

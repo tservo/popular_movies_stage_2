@@ -7,7 +7,7 @@
     android:layout_height="match_parent">
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/ib_play_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
@@ -18,7 +18,7 @@
         app:srcCompat="@android:drawable/ic_media_play" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tv_trailer_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
@@ -26,8 +26,8 @@
         android:lineSpacingExtra="2sp"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/imageButton"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
+        app:layout_constraintBottom_toTopOf="@+id/ib_play_video"
+        app:layout_constraintStart_toEndOf="@+id/ib_play_video"
+        app:layout_constraintTop_toBottomOf="@+id/ib_play_video"
         tools:text="@string/sample_trailer_name" />
 </android.support.constraint.ConstraintLayout>

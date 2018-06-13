@@ -8,6 +8,7 @@ import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Review;
+import com.example.android.popularmovies.data.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,6 +108,23 @@ public class TmdbConnector {
         return reviewList;
     }
 
+    public static List<Trailer> getTrailers( Context context,Movie movie) {
+        List<Trailer> trailerList;
+        /*
+        https://stackoverflow.com/questions/6349759/using-json-file-in-android-app-resources
+        this reads from the raw json resource file for reviews
+        will be replaced as necessary
+         */
+       // InputStream inputStream = context.getResources().openRawResource(R.raw.trailers);
+        //String json = new Scanner(inputStream).useDelimiter("\\A").next();
+
+        String json = getNetworkResponse(createMovieURL( String.format(Locale.getDefault(),TRAILERS,movie.getId()) ));
+        Log.d(TAG,"Trailer JSON Read: " + json);
+
+        trailerList = getTrailerListFromJson(json);
+        return trailerList;
+    }
+
     /**
      * helper method to parse json into movie objects.
      * @param json the source data in json
@@ -121,35 +139,6 @@ public class TmdbConnector {
             JSONArray jsonMovies = jsonObject.getJSONArray("results");
 
             return Movie.createListFromJSON(jsonMovies);
-//            Log.d(TAG,String.valueOf(jsonMovies.length()));
-//            // make the movie objects here
-//            for (int i = 0; i < jsonMovies.length(); i++) {
-//
-//                // read from the JSON
-//                JSONObject jsonMovieObject = jsonMovies.getJSONObject(i);
-//                int movieId = jsonMovieObject.getInt("id");
-//                double voteAverage = jsonMovieObject.getDouble("vote_average");
-//                String title = jsonMovieObject.getString("title");
-//                double popularity = jsonMovieObject.getDouble("popularity");
-//                String posterPath = jsonMovieObject.getString("poster_path");
-//                String backdropPath = jsonMovieObject.getString("backdrop_path");
-//                String originalLangCode = jsonMovieObject.getString("original_language");
-//                String originalTitle = jsonMovieObject.getString("original_title");
-//                String overview = jsonMovieObject.getString("overview");
-//                Date releaseDate = DATE_FORMAT.parse(jsonMovieObject.getString("release_date"));
-//
-//                // create and add the Movie object to the list.
-//                movieList.add( new Movie(   movieId,
-//                                            voteAverage,
-//                                            title,
-//                                            popularity,
-//                                            posterPath,
-//                                            backdropPath,
-//                                            originalLangCode,
-//                                            originalTitle,
-//                                            overview,
-//                                            releaseDate
-//                ));
 
         } catch (JSONException e) {
             Log.e(TAG,e.getMessage());
@@ -166,40 +155,41 @@ public class TmdbConnector {
     private static List<Review> getReviewListFromJson(String json) {
         if (null == json ) return null; // got nothing, so have to return nothing.
 
-        List<Review> reviewList = new ArrayList<>();
-
         try {
 
             JSONObject jsonObject = new JSONObject(json);
             JSONArray jsonReviews = jsonObject.getJSONArray("results");
             int movieId = jsonObject.getInt("id");
 
-            Log.d(TAG,String.valueOf(jsonReviews.length()));
-            // make the reviews objects here
-            for (int i = 0; i < jsonReviews.length(); i++) {
+            return Review.createListFromJson(movieId,jsonReviews);
 
-                // read from the JSON
-                JSONObject jsonReviewObject = jsonReviews.getJSONObject(i);
-                String reviewId = jsonReviewObject.getString("id");
-                String author = jsonReviewObject.getString("author");
-                String content = jsonReviewObject.getString("content");
-                String url = jsonReviewObject.getString("url");
-
-
-                // create and add the Movie object to the list.
-                reviewList.add( new Review(   reviewId,
-                        movieId,
-                        author,
-                        content,
-                        url
-                ));
-
-            }
         } catch (JSONException e) {
             Log.e(TAG,e.getMessage());
             return null;
         }
-        return reviewList;
+    }
+
+    /**
+     * Helper method to retrieve list of movie trailers
+     * from JSON input.
+     * @param json source json
+     * @return list of trailers
+     */
+    private static List<Trailer> getTrailerListFromJson(String json) {
+        if (null == json ) return null; // got nothing, so have to return nothing.
+
+        try {
+
+            JSONObject jsonObject = new JSONObject(json);
+            JSONArray jsonTrailers = jsonObject.getJSONArray("results");
+            int movieId = jsonObject.getInt("id");
+
+            return Trailer.createListFromJson(movieId,jsonTrailers);
+
+        } catch (JSONException e) {
+            Log.e(TAG,e.getMessage());
+            return null;
+        }
     }
 
     /**

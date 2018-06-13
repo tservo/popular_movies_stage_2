@@ -142,15 +142,13 @@
             <TextView
                 android:id="@+id/tv_movie_description"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
                 app:layout_constraintTop_toBottomOf="@id/barrier1"
                 tools:layout_height="100dp"
                 tools:text="A standard description for a movie goes here." />
@@ -170,6 +168,53 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_movie_description" />
 
             <TextView
+                android:id="@+id/tv_trailers_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/trailers_label"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
+                app:layout_constraintTop_toBottomOf="@id/divider_review" />
+
+            <LinearLayout
+                android:id="@+id/trailer_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="@+id/divider_review"
+                app:layout_constraintStart_toStartOf="@+id/tv_trailers_label"
+                app:layout_constraintTop_toBottomOf="@+id/tv_trailers_label"
+                tools:layout_height="64dp">
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/divider_review2"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
+                app:layout_constraintTop_toBottomOf="@+id/trailer_container" />
+
+
+            <TextView
                 android:id="@+id/tv_reviews_label"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -181,7 +226,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
-                app:layout_constraintTop_toBottomOf="@id/divider_review" />
+                app:layout_constraintTop_toBottomOf="@id/divider_review2" />
 
             <LinearLayout
                 android:id="@+id/review_container"
@@ -194,10 +239,13 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="@+id/divider_review"
+                app:layout_constraintEnd_toEndOf="@+id/divider_review2"
                 app:layout_constraintStart_toStartOf="@+id/tv_reviews_label"
                 app:layout_constraintTop_toBottomOf="@+id/tv_reviews_label"
-                tools:layout_height="64dp" />
+                tools:layout_height="64dp" >
+
+
+            </LinearLayout>
         </android.support.constraint.ConstraintLayout>
 
 

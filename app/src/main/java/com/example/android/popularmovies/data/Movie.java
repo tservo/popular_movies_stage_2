@@ -242,6 +242,10 @@ public class Movie implements Parcelable {
         mReleaseDate = DATE_FORMAT.parse(jsonMovieObject.getString("release_date"));
     }
 
+    /**
+     * this constructor is necessary for parcelable.
+     * @param source
+     */
     private Movie(Parcel source) {
         mId = source.readInt();
         mVoteAverage = source.readDouble();

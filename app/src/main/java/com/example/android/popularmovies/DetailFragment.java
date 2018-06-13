@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Review;
+import com.example.android.popularmovies.data.Trailer;
 import com.example.android.popularmovies.utilities.TmdbConnector;
 import com.squareup.picasso.Picasso;
 
@@ -37,7 +39,7 @@ public class DetailFragment extends Fragment {
     /**
      * tag
      */
-    private static final String TAG = DetailFragment.class.toString();
+    private static final String TAG = DetailFragment.class.getSimpleName();
 
     /**
      * The fragment argument representing the item ID that this fragment
@@ -55,6 +57,12 @@ public class DetailFragment extends Fragment {
      * The reviews list to show
      */
     private List<Review> mReviewList;
+
+    /**
+     * The trailers to show
+     */
+    private List<Trailer> mTrailerList;
+
     /**
      * The reviews recycler view and layout adapter
      */
@@ -62,6 +70,12 @@ public class DetailFragment extends Fragment {
     //private ReviewItemsAdapter mReviewsAdapter;
 
     private LinearLayout mReviewLayout;
+
+
+    /**
+     * the layout for trailers
+     */
+    private LinearLayout mTrailerLayout;
 
     /**
      * Loader id's
@@ -89,6 +103,7 @@ public class DetailFragment extends Fragment {
         }
         LoaderManager lm = getLoaderManager();
         lm.initLoader(LOADER_REVIEWS,null, mReviewLoader);
+        lm.initLoader(LOADER_TRAILERS, null, mTrailerLoader);
     }
 
     @Override
@@ -106,6 +121,7 @@ public class DetailFragment extends Fragment {
             ImageView moviePoster = rootView.findViewById(R.id.iv_movie_poster);
 
 
+            Log.d(TAG,mMovie.getOverview());
 
             // and now we populate things.
             //setTitle(movie.getTitle());
@@ -137,6 +153,9 @@ public class DetailFragment extends Fragment {
 
         mReviewLayout = view.findViewById(R.id.review_container);
         getLoaderManager().getLoader(LOADER_REVIEWS).forceLoad();
+
+        mTrailerLayout = view.findViewById(R.id.trailer_container);
+        getLoaderManager().getLoader(LOADER_TRAILERS).forceLoad();
 
 //        // initialize view, layoutmanager, and adapter
 //        mReviewsView = view.findViewById(R.id.review_recyclerview);
@@ -192,6 +211,35 @@ public class DetailFragment extends Fragment {
 
     }
 
+    /**
+     * helper method to add list of review view items
+     * into a linear layout.
+     *
+     */
+    private void addTrailers() {
+
+        // and now the layout inflater
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+
+        // make view from resource.
+        for (Trailer trailer : mTrailerList) {
+            View view = layoutInflater.inflate(R.layout.trailer_list_item,  mTrailerLayout, false);
+
+            View separator = layoutInflater.inflate(R.layout.separator, mTrailerLayout, false);
+
+            TextView author = view.findViewById(R.id.tv_trailer_name);
+            author.setText(trailer.getName());
+
+            // We'll add more here, like the ability to go to youtube.
+            //TextView content = view.findViewById(R.id.tv_review_content);
+            //content.setText(trailer.getContent());
+
+            mTrailerLayout.addView(view);
+            mTrailerLayout.addView(separator);
+        }
+
+    }
+
 
     /*
         Here are the callbacks and such for the Review AsyncLoader
@@ -234,6 +282,31 @@ public class DetailFragment extends Fragment {
                 }
             };
 
+    private LoaderManager.LoaderCallbacks<List<Trailer>> mTrailerLoader =
+            new LoaderManager.LoaderCallbacks<List<Trailer>>() {
+
+                @NonNull
+                @Override
+                public Loader<List<Trailer>> onCreateLoader(int id, @Nullable Bundle args) {
+                    if (id == LOADER_TRAILERS) {
+                        return new TrailersLoader(getContext(), mMovie);
+                    } else {
+                        throw new IllegalArgumentException(TAG);
+                    }
+                }
+
+                @Override
+                public void onLoadFinished(@NonNull Loader<List<Trailer>> loader, List<Trailer> data) {
+                    mTrailerList = data;
+                    addTrailers();
+                }
+
+                @Override
+                public void onLoaderReset(@NonNull Loader<List<Trailer>> loader) {
+
+                }
+            };
+
     public static class ReviewsLoader extends AsyncTaskLoader<List<Review>>  {
         Movie mMovie;
 
@@ -247,6 +320,22 @@ public class DetailFragment extends Fragment {
         public List<Review> loadInBackground() {
             List<Review> reviewsList = TmdbConnector.getReviews(mMovie);
             return reviewsList;
+        }
+    }
+
+    public static class TrailersLoader extends AsyncTaskLoader<List<Trailer>>  {
+        Movie mMovie;
+
+        public TrailersLoader(Context context, Movie movie) {
+            super(context);
+            mMovie = movie;
+        }
+
+        @Nullable
+        @Override
+        public List<Trailer> loadInBackground() {
+            List<Trailer> trailersList = TmdbConnector.getTrailers(getContext(),mMovie);
+            return trailersList;
         }
     }
 }
