@@ -82,6 +82,19 @@ public class Trailer {
     }
 
     /**
+     * get the youtube url from the info specified.
+     * @return
+     */
+    public String getTrailerUrl() {
+        switch(mSite) {
+            case "youtube":
+                return "http://img.youtube.com/vi/"+mKey+"/0.jpg";
+            default:
+                return "";
+        }
+    }
+
+    /**
      * private methods and constructors
      */
     private Trailer(int movieId, JSONObject jsonTrailerObject) throws JSONException {
