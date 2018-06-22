@@ -93,7 +93,24 @@ public class Trailer {
             case SITE_YOUTUBE:
                 return "http://img.youtube.com/vi/"+mKey+"/0.jpg";
             default:
-                return "";
+                return null;
+        }
+    }
+
+    public String getAppUri() {
+        switch (mSite) {
+            case SITE_YOUTUBE:
+                return "vnd.youtube:"+mKey;
+            default:
+                return null;
+        }
+    }
+    public String getWebUri() {
+        switch(mSite) {
+            case SITE_YOUTUBE:
+                return "http://www.youtube.com/watch?v="+mKey;
+            default:
+                return null;
         }
     }
 

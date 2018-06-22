@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.ARG_MOVIE,movie);
+            arguments.putBoolean(DetailFragment.ARG_TWO_PANE,true);
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

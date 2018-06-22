@@ -1,7 +1,10 @@
 package com.example.android.popularmovies;
 
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,6 +54,14 @@ public class DetailFragment extends Fragment
     public static final String ARG_MOVIE = "movie";
 
     /**
+     * the fragment argument representing that we're showing both main and detail panes together
+     */
+    public static final String ARG_TWO_PANE = "twopane";
+    /**
+     * stores if we're showing the main and the detail screens together
+     */
+    private boolean mTwoPane;
+    /**
      * The dummy content this fragment is presenting.
      */
     private Movie mMovie;
@@ -99,6 +110,7 @@ public class DetailFragment extends Fragment
         if (getArguments().containsKey(ARG_MOVIE)) {
             // get the single movie to fill the view
             mMovie = getArguments().getParcelable(ARG_MOVIE);
+            mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
 
         }
         LoaderManager lm = getLoaderManager();
@@ -158,7 +170,7 @@ public class DetailFragment extends Fragment
                 1, GridLayoutManager.HORIZONTAL, false);
 
         mTrailersView.setLayoutManager(gridLayoutManager);
-        mTrailersAdapter = new TrailerItemsAdapter(this);
+        mTrailersAdapter = new TrailerItemsAdapter(this, mTwoPane);
         mTrailersView.setAdapter(mTrailersAdapter);
 
         Log.d(TAG,"trailersview");
@@ -225,6 +237,28 @@ public class DetailFragment extends Fragment
 
     }
 
+    void watchVideo(Trailer trailer) {
+        String appUri = trailer.getAppUri();
+        String webUri = trailer.getWebUri();
+
+        // use the app's intent first, then try to access through the web.
+        boolean activityProcessed = false;
+        if (null != appUri) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(appUri));
+                startActivity(intent);
+                activityProcessed = true;
+            } catch (ActivityNotFoundException e) {
+                // nothing to do
+            }
+        }
+        if ( (!activityProcessed) && (null != webUri) ) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUri));
+            startActivity(intent);
+        }
+
+    }
+
     /**
      *
      * @param trailer the trailer in question
@@ -232,7 +266,10 @@ public class DetailFragment extends Fragment
     @Override
     public void onTrailerItemClick(Trailer trailer) {
         Log.d(TAG,trailer.getName());
+        watchVideo(trailer); // I might want to do more here
     }
+
+
     /*
         Here are the callbacks and such for the Review AsyncLoader
      */

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.popularmovies.data.Trailer;
+import com.example.android.popularmovies.utilities.DisplayHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -28,6 +29,11 @@ public class TrailerItemsAdapter extends RecyclerView.Adapter<TrailerItemsAdapte
 
     // the storage for the trailers
     private List<Trailer> mTrailerList;
+
+    /**
+     * stores whether we are showing two panes at once
+     */
+    private boolean mTwoPane;
 
     // store size of image here
 
@@ -48,8 +54,9 @@ public class TrailerItemsAdapter extends RecyclerView.Adapter<TrailerItemsAdapte
      * constructor so we can get the click listener in
      *
      */
-    TrailerItemsAdapter(TrailerItemClickListener onClickListener) {
+    TrailerItemsAdapter(TrailerItemClickListener onClickListener, boolean twoPane) {
         mOnClickListener = onClickListener;
+        mTwoPane = twoPane;
     }
 
     /**
@@ -67,10 +74,13 @@ public class TrailerItemsAdapter extends RecyclerView.Adapter<TrailerItemsAdapte
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         View view = layoutInflater.inflate(R.layout.trailer_thumb_item, parent, false);
-        mWidth = parent.getLayoutParams().width / NUM_THUMBNAILS;
-
-        Log.d(TAG, String.format("Measured Width: %d",mWidth));
-        mHeight = (int) (mWidth / ASPECT_RATIO);
+        if (DisplayHelper.calculateThumbnailImageSize(context, mTwoPane) == DisplayHelper.THUMBNAIL_LARGE) {
+            mWidth = 480;
+            mHeight = 360;
+        } else {
+            mWidth = 240;
+            mHeight = 180;
+        }
 
         //RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) view.getLayoutParams();
         //layoutParams.width = mWidth;
@@ -90,8 +100,8 @@ public class TrailerItemsAdapter extends RecyclerView.Adapter<TrailerItemsAdapte
         Trailer trailer = mTrailerList.get(position);
 
         Picasso.get().load(trailer.getThumbnail())
-                //.resize(mWidth,mHeight)
-                //.centerCrop()
+                .resize(mWidth,mHeight)
+                .centerCrop()
                 .into(holder.trailerThumb);
 
         holder.trailerThumb.setContentDescription(trailer.getName());

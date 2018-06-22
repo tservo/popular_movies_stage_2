@@ -25,6 +25,7 @@ public class DetailActivity extends AppCompatActivity {
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.ARG_MOVIE, movie);
+            arguments.putBoolean(DetailFragment.ARG_TWO_PANE, false);
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);
