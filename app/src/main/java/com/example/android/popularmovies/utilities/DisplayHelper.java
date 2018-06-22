@@ -64,6 +64,12 @@ public class DisplayHelper {
         return noOfColumns;
     }
 
+    /**
+     * Utility function to calculate the thumbnail image size depending on the view size
+     * @param context Android context
+     * @param twoPane do we have a two-pane display?
+     * @return value corresponding to the thumbnail size
+     */
     public static int calculateThumbnailImageSize(Context context, Boolean twoPane) {
         Point dimensions = calculateDp(context, twoPane);
         if (dimensions.x > THRESHOLD_WIDTH && dimensions.y > THRESHOLD_HEIGHT) {
