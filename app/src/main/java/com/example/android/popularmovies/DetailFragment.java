@@ -10,6 +10,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +37,8 @@ import java.util.Locale;
  * in two-pane mode (on tablets) or a {@link DetailActivity}
  * on handsets.
  */
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment
+    implements TrailerItemsAdapter.TrailerItemClickListener {
     /**
      * tag
      */
@@ -61,7 +64,8 @@ public class DetailFragment extends Fragment {
     /**
      * The trailers to show
      */
-    private List<Trailer> mTrailerList;
+    private RecyclerView mTrailersView;
+    private TrailerItemsAdapter mTrailersAdapter;
 
     /**
      * The reviews recycler view and layout adapter
@@ -72,10 +76,6 @@ public class DetailFragment extends Fragment {
     private LinearLayout mReviewLayout;
 
 
-    /**
-     * the layout for trailers
-     */
-    private LinearLayout mTrailerLayout;
 
     /**
      * Loader id's
@@ -136,6 +136,7 @@ public class DetailFragment extends Fragment {
             voterRating.setRating((float)(mMovie.getVoteAverage()/2.0));
 
             Picasso.get().load(mMovie.getThumbnail()).into(moviePoster);
+            moviePoster.setContentDescription(mMovie.getTitle());
         }
 
         return rootView;
@@ -144,18 +145,31 @@ public class DetailFragment extends Fragment {
     /**
      * set up the recycler views up here.
      * https://gist.github.com/chr33z/2652046522d30ddedd2c
-     * @param view
-     * @param savedInstanceState
+     * @param view when the fragment's view is created
+     * @param savedInstanceState not currently used
      */
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // initialize trailer recycler view
+        mTrailersView = view.findViewById(R.id.trailer_container);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(mTrailersView.getContext(),
+                1, GridLayoutManager.HORIZONTAL, false);
+
+        mTrailersView.setLayoutManager(gridLayoutManager);
+        mTrailersAdapter = new TrailerItemsAdapter(this);
+        mTrailersView.setAdapter(mTrailersAdapter);
+
+        Log.d(TAG,"trailersview");
 
         mReviewLayout = view.findViewById(R.id.review_container);
         getLoaderManager().getLoader(LOADER_REVIEWS).forceLoad();
 
-        mTrailerLayout = view.findViewById(R.id.trailer_container);
         getLoaderManager().getLoader(LOADER_TRAILERS).forceLoad();
+
+
+
 
 //        // initialize view, layoutmanager, and adapter
 //        mReviewsView = view.findViewById(R.id.review_recyclerview);
@@ -212,35 +226,13 @@ public class DetailFragment extends Fragment {
     }
 
     /**
-     * helper method to add list of review view items
-     * into a linear layout.
      *
+     * @param trailer the trailer in question
      */
-    private void addTrailers() {
-
-        // and now the layout inflater
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-
-        // make view from resource.
-        for (Trailer trailer : mTrailerList) {
-            View view = layoutInflater.inflate(R.layout.trailer_list_item,  mTrailerLayout, false);
-
-            View separator = layoutInflater.inflate(R.layout.separator, mTrailerLayout, false);
-
-            TextView author = view.findViewById(R.id.tv_trailer_name);
-            author.setText(trailer.getName());
-
-            // We'll add more here, like the ability to go to youtube.
-            //TextView content = view.findViewById(R.id.tv_review_content);
-            //content.setText(trailer.getContent());
-
-            mTrailerLayout.addView(view);
-            mTrailerLayout.addView(separator);
-        }
-
+    @Override
+    public void onTrailerItemClick(Trailer trailer) {
+        Log.d(TAG,trailer.getName());
     }
-
-
     /*
         Here are the callbacks and such for the Review AsyncLoader
      */
@@ -296,9 +288,8 @@ public class DetailFragment extends Fragment {
                 }
 
                 @Override
-                public void onLoadFinished(@NonNull Loader<List<Trailer>> loader, List<Trailer> data) {
-                    mTrailerList = data;
-                    addTrailers();
+                public void onLoadFinished(@NonNull Loader<List<Trailer>> loader, List<Trailer> trailers) {
+                    mTrailersAdapter.getTrailers(trailers);
                 }
 
                 @Override
@@ -306,6 +297,8 @@ public class DetailFragment extends Fragment {
 
                 }
             };
+
+
 
     public static class ReviewsLoader extends AsyncTaskLoader<List<Review>>  {
         Movie mMovie;

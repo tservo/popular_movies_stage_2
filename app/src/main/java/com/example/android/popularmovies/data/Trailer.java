@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Trailer {
     private static final String TAG = Trailer.class.getSimpleName();
+    private static final String SITE_YOUTUBE = "YouTube";
+
 
     private final String mId; // trailer id
     private final int mMovieId; // the movie id
@@ -19,6 +21,7 @@ public class Trailer {
     private final String mSite; // site
     private final int mSize; // video size
     private final String mType; // trailer type
+
 
     public static List<Trailer> createListFromJson(int movieId, JSONArray jsonTrailers) {
         List<Trailer> trailerList = new ArrayList<>();
@@ -83,11 +86,11 @@ public class Trailer {
 
     /**
      * get the youtube url from the info specified.
-     * @return
+     * @return the thumbnail URL if exists
      */
-    public String getTrailerUrl() {
+    public String getThumbnail() {
         switch(mSite) {
-            case "youtube":
+            case SITE_YOUTUBE:
                 return "http://img.youtube.com/vi/"+mKey+"/0.jpg";
             default:
                 return "";

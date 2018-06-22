@@ -181,7 +181,7 @@
                 app:layout_constraintStart_toStartOf="@+id/tv_movie_title"
                 app:layout_constraintTop_toBottomOf="@id/divider_review" />
 
-            <LinearLayout
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/trailer_container"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -196,7 +196,7 @@
                 app:layout_constraintStart_toStartOf="@+id/tv_trailers_label"
                 app:layout_constraintTop_toBottomOf="@+id/tv_trailers_label"
                 tools:layout_height="64dp">
-            </LinearLayout>
+            </android.support.v7.widget.RecyclerView>
 
 
             <View
