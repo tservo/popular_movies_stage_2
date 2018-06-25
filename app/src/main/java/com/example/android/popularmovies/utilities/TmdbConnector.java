@@ -108,7 +108,7 @@ public class TmdbConnector {
         return reviewList;
     }
 
-    public static List<Trailer> getTrailers( Context context,Movie movie) {
+    public static List<Trailer> getTrailers(Movie movie) {
         List<Trailer> trailerList;
         /*
         https://stackoverflow.com/questions/6349759/using-json-file-in-android-app-resources

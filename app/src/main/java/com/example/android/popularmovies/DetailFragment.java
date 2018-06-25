@@ -19,15 +19,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Review;
 import com.example.android.popularmovies.data.Trailer;
+import com.example.android.popularmovies.database.AppDatabase;
+import com.example.android.popularmovies.database.AppExecutors;
 import com.example.android.popularmovies.utilities.TmdbConnector;
+import com.facebook.stetho.inspector.network.AsyncPrettyPrinterRegistry;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -61,6 +66,12 @@ public class DetailFragment extends Fragment
      * stores if we're showing the main and the detail screens together
      */
     private boolean mTwoPane;
+
+    /**
+     * our database instance
+     */
+    private AppDatabase mDb;
+
     /**
      * The dummy content this fragment is presenting.
      */
@@ -107,6 +118,8 @@ public class DetailFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDb = AppDatabase.getInstance(getContext());
+
         if (getArguments().containsKey(ARG_MOVIE)) {
             // get the single movie to fill the view
             mMovie = getArguments().getParcelable(ARG_MOVIE);
@@ -132,7 +145,6 @@ public class DetailFragment extends Fragment
             RatingBar voterRating = rootView.findViewById(R.id.rb_voter_rating);
             ImageView moviePoster = rootView.findViewById(R.id.iv_movie_poster);
 
-
             Log.d(TAG,mMovie.getOverview());
 
             // and now we populate things.
@@ -149,6 +161,42 @@ public class DetailFragment extends Fragment
 
             Picasso.get().load(mMovie.getThumbnail()).into(moviePoster);
             moviePoster.setContentDescription(mMovie.getTitle());
+
+
+            // set up our favorites button
+            final ToggleButton favorite = rootView.findViewById(R.id.btn_favorite);
+            favorite.setChecked(mMovie.isFavorite());
+
+            favorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        Log.d(TAG, "Favorite button checked");
+                        // this is where we will create/update the movie
+                        // with the favorite button
+                        mMovie.setFavorite(true);
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDb.movieDao().upsertMovie(mMovie);
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "Favorite button unchecked");
+                        // this is where we update the movie
+                        // to no longer be a favorite.
+                        // it makes no sense for the movie to not exist already
+                        // at this point.
+                        mMovie.setFavorite(false);
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mDb.movieDao().updateMovie(mMovie);
+                            }
+                        });
+                    }
+                }
+            });
         }
 
         return rootView;
@@ -364,7 +412,7 @@ public class DetailFragment extends Fragment
         @Nullable
         @Override
         public List<Trailer> loadInBackground() {
-            List<Trailer> trailersList = TmdbConnector.getTrailers(getContext(),mMovie);
+            List<Trailer> trailersList = TmdbConnector.getTrailers(mMovie);
             return trailersList;
         }
     }

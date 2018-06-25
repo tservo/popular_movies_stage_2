@@ -5,6 +5,7 @@
     <string name="movie_list_key" translatable="false">movie_list</string>
     <string name="popular_value">Most Popular</string>
     <string name="top_rated_value">Top Rated</string>
+    <string name="favorite_value">My Favorite Movies</string>
 
     <!-- *******************
         detail activity
@@ -23,4 +24,7 @@
     <!-- trailers -->
     <string name="trailers_label">Trailers</string>
     <string name="sample_trailer_name">Movie Detail 1</string>
+
+    <!-- favorites -->
+    <string name="favorites_label">Favorite</string>
 </resources>

@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Review;
+import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.utilities.DisplayHelper;
 import com.example.android.popularmovies.utilities.PreferencesHelper;
 import com.example.android.popularmovies.utilities.TmdbConnector;
@@ -34,15 +35,21 @@ public class MainActivity extends AppCompatActivity
                     MovieItemsAdapter.MovieItemClickListener,
                     SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    // for the recycler view
     private RecyclerView mMovieThumbRecyclerView;
     private MovieItemsAdapter mAdapter;
+
+    // the spinner to show which movies are shown
     private Spinner mSpinner;
 
     private Parcelable mThumbState; // hold the state of the movie thumb list
 
     private boolean mTwoPane; // hold whether or not we are going to use both list and detail view.
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private AppDatabase mDb; // handle to the database object
+
 
 
     @Override
@@ -58,6 +65,9 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
 
+
+        // get the database handle
+        mDb = AppDatabase.getInstance(this);
 
         // do we have a large enough screen for the two pane layout?
         mTwoPane = (findViewById(R.id.movie_detail_container) != null);
@@ -217,9 +227,10 @@ public class MainActivity extends AppCompatActivity
 
             if (call.equals(getString(R.string.popular_value))) {
                 movieList = TmdbConnector.getPopularMovies();
-
             } else if (call.equals(getString(R.string.top_rated_value))) {
                 movieList = TmdbConnector.getTopRatedMovies();
+            } else if (call.equals(getString(R.string.favorite_value))) {
+                movieList = mDb.movieDao().loadFavoriteMovies();
             } else {
                 throw new IllegalArgumentException(TAG + ": " + call + " invalid option");
             }

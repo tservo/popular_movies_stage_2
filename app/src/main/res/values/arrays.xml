@@ -3,5 +3,6 @@
     <string-array name="view_options">
         <item>@string/popular_value</item>
         <item>@string/top_rated_value</item>
+        <item>@string/favorite_value</item>
     </string-array>
 </resources>

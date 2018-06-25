@@ -1,5 +1,9 @@
 package com.example.android.popularmovies.data;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@Entity(tableName = "movies")
 public class Movie implements Parcelable {
     private static final String TAG = Movie.class.getSimpleName();
 
@@ -25,18 +30,40 @@ public class Movie implements Parcelable {
     private static final String THUMBNAIL_SIZE = "w185";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    @PrimaryKey(autoGenerate = false)
+    private final int id; // movie id
 
-    private final int mId; // movie id
-
+    @ColumnInfo(name = "vote_average")
     private final double mVoteAverage; // average voter score
+
+    @ColumnInfo(name = "title")
     private final String mTitle; // movie title
+
+    @ColumnInfo(name = "popularity")
     private final double mPopularity; // movie popularity
+
+    @ColumnInfo(name = "path_poster")
     private final String mPosterPath; // stores the poster's base location, subject to size parameters
+
+    @ColumnInfo(name = "path_backdrop")
     private final String mBackdropPath; // stores the backdrop's base location, subject to size parameters
+
+
+
+    @ColumnInfo(name = "original_lang_code")
     private final String mOriginalLangCode; // the language code for the original movie language
+
+    @ColumnInfo(name = "original_title")
     private final String mOriginalTitle; // movie's original title
+
+    @ColumnInfo(name = "overview")
     private final String mOverview; // movie overview
+
+    @ColumnInfo(name = "release_date")
     private final Date mReleaseDate; // movie release date
+
+    @ColumnInfo(name = "favorite")
+    private boolean mFavorite; // is the movie a favorite?
 
     /**
      * this factory method creates a list of Movies from a JSON Array of Movies
@@ -86,25 +113,30 @@ public class Movie implements Parcelable {
                  String originalLangCode,
                  String originalTitle,
                  String overview,
-                 Date releaseDate
+                 Date releaseDate,
+                 boolean favorite
     ) {
-        mId = id;
-        mVoteAverage = voteAverage;
-        mTitle = title;
-        mPopularity = popularity;
-        mPosterPath = removeLeadingSlash(posterPath); // remove the leading slash if necessary
-        mBackdropPath = removeLeadingSlash(backdropPath); // remove the leading slash if necessary
-        mOriginalLangCode = originalLangCode;
-        mOriginalTitle = originalTitle;
-        mOverview = overview;
-        mReleaseDate = releaseDate; // should this really be a date?
+        this.id = id;
+        this.mVoteAverage = voteAverage;
+        this.mTitle = title;
+        this.mPopularity = popularity;
+        this.mPosterPath = removeLeadingSlash(posterPath); // remove the leading slash if necessary
+        this.mBackdropPath = removeLeadingSlash(backdropPath); // remove the leading slash if necessary
+        this.mOriginalLangCode = originalLangCode;
+        this.mOriginalTitle = originalTitle;
+        this.mOverview = overview;
+        this.mReleaseDate = releaseDate; // should this really be a date?
+        this.mFavorite = favorite;
     }
 
+    /*
+      Getters for the member variables
+     */
     /**
      * @return the movie id
      */
     public int getId() {
-        return mId;
+        return id;
     }
 
     /**
@@ -114,6 +146,26 @@ public class Movie implements Parcelable {
         return mTitle;
     }
 
+    /**
+     * @return the movie's popularity
+     */
+    public double getPopularity() {
+        return mPopularity;
+    }
+
+    /**
+     * @return the movie's poster on the server
+     */
+    public String getPosterPath() {
+        return mPosterPath;
+    }
+
+    /**
+     * @return the backdrop path on the server
+     */
+    public String getBackdropPath() {
+        return mBackdropPath;
+    }
     /**
      * @return the release date.
      */
@@ -161,6 +213,23 @@ public class Movie implements Parcelable {
         return mOverview;
     }
 
+    public String getOriginalLangCode() {
+        return mOriginalLangCode;
+    }
+
+    public boolean isFavorite() {
+        return mFavorite;
+    }
+
+
+    /*
+     * Setters
+     */
+
+    public void setFavorite(boolean favorite) {
+        this.mFavorite = favorite;
+    }
+
     /**
      * parcelable method
      * doesn't seem to do much - has to be overridden.
@@ -171,6 +240,8 @@ public class Movie implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+
 
     /**
      * parcelable method
@@ -183,7 +254,7 @@ public class Movie implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
 
 
-        dest.writeInt(mId);
+        dest.writeInt(id);
         dest.writeDouble(mVoteAverage);
         dest.writeString(mTitle);
         dest.writeDouble(mPopularity);
@@ -195,6 +266,7 @@ public class Movie implements Parcelable {
         // good idea from https://stackoverflow.com/questions/21017404/reading-and-writing-java-util-date-from-parcelable-class
         // parcel it as a _long_ and
         dest.writeLong(mReleaseDate.getTime());
+        dest.writeBooleanArray(new boolean[]{mFavorite}); // can't write just one boolean
     }
 
     static final Parcelable.Creator<Movie> CREATOR =
@@ -228,36 +300,47 @@ public class Movie implements Parcelable {
 
     /**
      * constructor to build a movie from a TMDB JSON object
+     * not the constructor used by the DB
      */
+    @Ignore
     private Movie(JSONObject jsonMovieObject) throws JSONException, ParseException {
-        mId = jsonMovieObject.getInt("id");
-        mVoteAverage = jsonMovieObject.getDouble("vote_average");
-        mTitle = jsonMovieObject.getString("title");
-        mPopularity = jsonMovieObject.getDouble("popularity");
-        mPosterPath = removeLeadingSlash(jsonMovieObject.getString("poster_path"));
-        mBackdropPath = removeLeadingSlash(jsonMovieObject.getString("backdrop_path"));
-        mOriginalLangCode = jsonMovieObject.getString("original_language");
-        mOriginalTitle = jsonMovieObject.getString("original_title");
-        mOverview = jsonMovieObject.getString("overview");
-        mReleaseDate = DATE_FORMAT.parse(jsonMovieObject.getString("release_date"));
+        this.id = jsonMovieObject.getInt("id");
+        this.mVoteAverage = jsonMovieObject.getDouble("vote_average");
+        this.mTitle = jsonMovieObject.getString("title");
+        this.mPopularity = jsonMovieObject.getDouble("popularity");
+        this.mPosterPath = removeLeadingSlash(jsonMovieObject.getString("poster_path"));
+        this.mBackdropPath = removeLeadingSlash(jsonMovieObject.getString("backdrop_path"));
+        this.mOriginalLangCode = jsonMovieObject.getString("original_language");
+        this.mOriginalTitle = jsonMovieObject.getString("original_title");
+        this.mOverview = jsonMovieObject.getString("overview");
+        this.mReleaseDate = DATE_FORMAT.parse(jsonMovieObject.getString("release_date"));
+
+        // need logic to get the favorite value
+        this.mFavorite = false;
     }
 
     /**
      * this constructor is necessary for parcelable.
+     * Not the constructor used by the database
      * @param source
      */
+    @Ignore
     private Movie(Parcel source) {
-        mId = source.readInt();
-        mVoteAverage = source.readDouble();
-        mTitle = source.readString();
-        mPopularity = source.readDouble();
-        mPosterPath = source.readString();
-        mBackdropPath = source.readString();
-        mOriginalLangCode = source.readString();
-        mOriginalTitle = source.readString();
-        mOverview = source.readString();
+        this.id = source.readInt();
+        this.mVoteAverage = source.readDouble();
+        this.mTitle = source.readString();
+        this.mPopularity = source.readDouble();
+        this.mPosterPath = source.readString();
+        this.mBackdropPath = source.readString();
+        this.mOriginalLangCode = source.readString();
+        this.mOriginalTitle = source.readString();
+        this.mOverview = source.readString();
         // using the long is fast and easy way to parcel a Date
-        mReleaseDate = new Date(source.readLong());
+        this.mReleaseDate = new Date(source.readLong());
 
+        // use this to get the favorite back
+        boolean[] booleanArray = new boolean[1];
+        source.readBooleanArray(booleanArray);
+        this.mFavorite = booleanArray[0];
     }
 }
