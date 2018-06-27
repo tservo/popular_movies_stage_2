@@ -1,6 +1,8 @@
 package com.example.android.popularmovies;
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -30,9 +32,9 @@ import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.data.Review;
 import com.example.android.popularmovies.data.Trailer;
 import com.example.android.popularmovies.database.AppDatabase;
-import com.example.android.popularmovies.database.AppExecutors;
 import com.example.android.popularmovies.utilities.TmdbConnector;
-import com.facebook.stetho.inspector.network.AsyncPrettyPrinterRegistry;
+import com.example.android.popularmovies.viewmodels.DetailMovieViewModel;
+import com.example.android.popularmovies.viewmodels.DetailMovieViewModelFactory;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -71,6 +73,7 @@ public class DetailFragment extends Fragment
      * our database instance
      */
     private AppDatabase mDb;
+    private DetailMovieViewModel mViewModel;
 
     /**
      * The dummy content this fragment is presenting.
@@ -98,6 +101,16 @@ public class DetailFragment extends Fragment
     private LinearLayout mReviewLayout;
 
 
+    /**
+     * the view components for the detail screen
+     */
+    TextView  mMovieTitle;
+    TextView  mOriginalTitle;
+    TextView  mReleaseDate;
+    TextView  mMovieDescription;
+    RatingBar mVoterRating;
+    ImageView mMoviePoster;
+    ToggleButton mToggleButton;
 
     /**
      * Loader id's
@@ -126,78 +139,64 @@ public class DetailFragment extends Fragment
             mTwoPane = getArguments().getBoolean(ARG_TWO_PANE);
 
         }
+
+        DetailMovieViewModelFactory factory = new DetailMovieViewModelFactory(mDb,mMovie);
+        mViewModel = ViewModelProviders.of(this,factory).get(DetailMovieViewModel.class);
+
         LoaderManager lm = getLoaderManager();
         lm.initLoader(LOADER_REVIEWS,null, mReviewLoader);
         lm.initLoader(LOADER_TRAILERS, null, mTrailerLoader);
     }
 
+    private void populateMovieUI(Movie movie) {
+
+        // and now we populate things.
+        //setTitle(movie.getTitle());
+        mMovieTitle.setText( String.format(Locale.getDefault(),"%s (%d)",movie.getTitle(),movie.getReleaseYear()) );
+        mOriginalTitle.setText(movie.getOriginalTitle());
+        mMovieDescription.setText(movie.getOverview());
+
+        // format the date in a form suitable for the default locale
+        DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getContext());
+        mReleaseDate.setText(dateFormat.format(movie.getReleaseDate()));
+
+        mVoterRating.setRating((float)(movie.getVoteAverage()/2.0));
+
+        Picasso.get().load(movie.getThumbnail()).into(mMoviePoster);
+        mMoviePoster.setContentDescription(movie.getTitle());
+        mToggleButton.setChecked(movie.isFavorite());
+
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_detail, container, false);
 
-        // Populate the view if we have a movie
-        if (mMovie != null) {
-            TextView movieTitle = rootView.findViewById(R.id.tv_movie_title);
-            TextView originalTitle = rootView.findViewById(R.id.tv_original_title);
-            TextView releaseDate = rootView.findViewById(R.id.tv_release_date);
-            TextView movieDescription = rootView.findViewById(R.id.tv_movie_description);
-            RatingBar voterRating = rootView.findViewById(R.id.rb_voter_rating);
-            ImageView moviePoster = rootView.findViewById(R.id.iv_movie_poster);
+        mMovieTitle       = rootView.findViewById(R.id.tv_movie_title);
+        mOriginalTitle    = rootView.findViewById(R.id.tv_original_title);
+        mReleaseDate      = rootView.findViewById(R.id.tv_release_date);
+        mMovieDescription = rootView.findViewById(R.id.tv_movie_description);
+        mVoterRating      = rootView.findViewById(R.id.rb_voter_rating);
+        mMoviePoster      = rootView.findViewById(R.id.iv_movie_poster);
+        mToggleButton     = rootView.findViewById(R.id.btn_favorite);
 
-            Log.d(TAG,mMovie.getOverview());
+        mViewModel.getMovie().observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(@Nullable Movie movie) {
+                // changed so update it.
+                Log.d(TAG,"observer called");
+                populateMovieUI(movie);
+            }
+        });
 
-            // and now we populate things.
-            //setTitle(movie.getTitle());
-            movieTitle.setText( String.format(Locale.getDefault(),"%s (%d)",mMovie.getTitle(),mMovie.getReleaseYear()) );
-            originalTitle.setText(mMovie.getOriginalTitle());
-            movieDescription.setText(mMovie.getOverview());
-
-            // format the date in a form suitable for the default locale
-            DateFormat dateFormat = android.text.format.DateFormat.getMediumDateFormat(getContext());
-            releaseDate.setText(dateFormat.format(mMovie.getReleaseDate()));
-
-            voterRating.setRating((float)(mMovie.getVoteAverage()/2.0));
-
-            Picasso.get().load(mMovie.getThumbnail()).into(moviePoster);
-            moviePoster.setContentDescription(mMovie.getTitle());
-
-
-            // set up our favorites button
-            final ToggleButton favorite = rootView.findViewById(R.id.btn_favorite);
-            favorite.setChecked(mMovie.isFavorite());
-
-            favorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        Log.d(TAG, "Favorite button checked");
-                        // this is where we will create/update the movie
-                        // with the favorite button
-                        mMovie.setFavorite(true);
-                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDb.movieDao().upsertMovie(mMovie);
-                            }
-                        });
-                    } else {
-                        Log.d(TAG, "Favorite button unchecked");
-                        // this is where we update the movie
-                        // to no longer be a favorite.
-                        // it makes no sense for the movie to not exist already
-                        // at this point.
-                        mMovie.setFavorite(false);
-                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mDb.movieDao().updateMovie(mMovie);
-                            }
-                        });
-                    }
-                }
-            });
-        }
+        mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // toggle favorite and write to db.
+                Log.d(TAG,"writing to DB");
+                mViewModel.setFavoriteMovie(isChecked);
+            }
+        });
 
         return rootView;
     }

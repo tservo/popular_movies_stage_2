@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.utilities;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -66,7 +67,7 @@ public class TmdbConnector {
     public static List<Movie> getPopularMovies() {
 
         // attempt to get the movies from the api call to "popular"
-        List<Movie> movieList;
+        final List<Movie> movieList;
 
         String json = getNetworkResponse(createMovieURL(POPULAR));
         movieList = getMovieListFromJson(json);
@@ -80,7 +81,7 @@ public class TmdbConnector {
      */
     public static List<Movie> getTopRatedMovies() {
         // attempt to get the movies from the api call to "top rated"
-        List<Movie> movieList;
+        final List<Movie> movieList;
 
         String json = getNetworkResponse(createMovieURL(TOP_RATED));
         movieList = getMovieListFromJson(json);
@@ -91,17 +92,7 @@ public class TmdbConnector {
     public static List<Review> getReviews(Movie movie) {
         List<Review> reviewList;
 
-        /*
-        https://stackoverflow.com/questions/6349759/using-json-file-in-android-app-resources
-        this reads from the raw json resource file for reviews
-        will be replaced as necessary
-         */
-        //InputStream inputStream = context.getResources().openRawResource(R.raw.reviews);
-        //String json = new Scanner(inputStream).useDelimiter("\\A").next();
-
         String json = getNetworkResponse(createMovieURL( String.format(Locale.getDefault(),REVIEWS,movie.getId()) ));
-        Log.d(TAG,"Review JSON Read: " + json);
-
         reviewList = getReviewListFromJson(json);
 
 
@@ -110,17 +101,8 @@ public class TmdbConnector {
 
     public static List<Trailer> getTrailers(Movie movie) {
         List<Trailer> trailerList;
-        /*
-        https://stackoverflow.com/questions/6349759/using-json-file-in-android-app-resources
-        this reads from the raw json resource file for reviews
-        will be replaced as necessary
-         */
-       // InputStream inputStream = context.getResources().openRawResource(R.raw.trailers);
-        //String json = new Scanner(inputStream).useDelimiter("\\A").next();
 
         String json = getNetworkResponse(createMovieURL( String.format(Locale.getDefault(),TRAILERS,movie.getId()) ));
-        Log.d(TAG,"Trailer JSON Read: " + json);
-
         trailerList = getTrailerListFromJson(json);
         return trailerList;
     }

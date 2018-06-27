@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -24,10 +25,10 @@ public abstract class MovieDao {
     public abstract void deleteMovie(Movie movie);
 
     @Query("SELECT * from movies where id = :id")
-    public abstract Movie loadMovieById(int id);
+    public abstract LiveData<Movie> loadMovieById(int id);
 
     @Query("SELECT * from movies where favorite = 1")
-    public abstract List<Movie> loadFavoriteMovies();
+    public abstract LiveData<List<Movie>> loadFavoriteMovies();
 
     /**
      * https://stackoverflow.com/questions/45677230/android-room-persistence-library-upsert
