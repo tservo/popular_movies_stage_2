@@ -11,14 +11,12 @@ import com.example.android.popularmovies.AppExecutors;
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.database.AppDatabase;
 
-import java.util.List;
-
 public class DetailMovieViewModel extends ViewModel {
 
-    private AppDatabase mDatabase;
-    private MediatorLiveData<Movie> mMovie;
+    private final AppDatabase mDatabase;
+    private final MediatorLiveData<Movie> mMovie;
 
-    private LiveData<Movie> mMovieLiveData; // store the call from the db here
+    private final LiveData<Movie> mMovieLiveData; // store the call from the db here
 
     // I could put the Reviews and Trailers here, perhaps with LiveData, but it's
     // a bit complicated.

@@ -1,10 +1,7 @@
 package com.example.android.popularmovies.utilities;
 
 import android.content.Context;
-import android.graphics.Point;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 
 /**
  * This class is a helper class for display functions
@@ -23,8 +20,8 @@ public class DisplayHelper {
      * utility class to send two floats as a return
      */
     private static class Point {
-        float x;
-        float y;
+        final float x;
+        final float y;
 
         Point(float x, float y) {
             this.x = x;

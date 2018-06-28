@@ -98,13 +98,13 @@ public class DetailFragment extends Fragment
     /**
      * the view components for the detail screen
      */
-    TextView  mMovieTitle;
-    TextView  mOriginalTitle;
-    TextView  mReleaseDate;
-    TextView  mMovieDescription;
-    RatingBar mVoterRating;
-    ImageView mMoviePoster;
-    ToggleButton mToggleButton;
+    private TextView  mMovieTitle;
+    private TextView  mOriginalTitle;
+    private TextView  mReleaseDate;
+    private TextView  mMovieDescription;
+    private RatingBar mVoterRating;
+    private ImageView mMoviePoster;
+    private ToggleButton mToggleButton;
 
     /**
      * Loader id's
@@ -282,7 +282,7 @@ public class DetailFragment extends Fragment
 
     }
 
-    void watchVideo(Trailer trailer) {
+    private void watchVideo(Trailer trailer) {
         String appUri = trailer.getAppUri();
         String webUri = trailer.getWebUri();
 
@@ -326,13 +326,13 @@ public class DetailFragment extends Fragment
         https://stackoverflow.com/questions/15643907/multiple-loaders-in-same-activity/20839825#20839825
      */
 
-    /*********
-     * Loader Callbacks!
+    /********
+     Loader Callbacks!
      */
     /**
      * Loader callback for Review list.
      */
-    private LoaderManager.LoaderCallbacks<List<Review>> mReviewLoader =
+    private final LoaderManager.LoaderCallbacks<List<Review>> mReviewLoader =
             new LoaderManager.LoaderCallbacks<List<Review>>() {
                 @NonNull
                 @Override
@@ -355,7 +355,7 @@ public class DetailFragment extends Fragment
                 }
             };
 
-    private LoaderManager.LoaderCallbacks<List<Trailer>> mTrailerLoader =
+    private final LoaderManager.LoaderCallbacks<List<Trailer>> mTrailerLoader =
             new LoaderManager.LoaderCallbacks<List<Trailer>>() {
 
                 @NonNull
@@ -381,10 +381,10 @@ public class DetailFragment extends Fragment
 
 
 
-    public static class ReviewsLoader extends AsyncTaskLoader<List<Review>>  {
-        Movie mMovie;
+    static class ReviewsLoader extends AsyncTaskLoader<List<Review>>  {
+        final Movie mMovie;
 
-        public ReviewsLoader(Context context, Movie movie) {
+        ReviewsLoader(Context context, Movie movie) {
             super(context);
             mMovie = movie;
         }
@@ -397,10 +397,10 @@ public class DetailFragment extends Fragment
         }
     }
 
-    public static class TrailersLoader extends AsyncTaskLoader<List<Trailer>>  {
-        Movie mMovie;
+    static class TrailersLoader extends AsyncTaskLoader<List<Trailer>>  {
+        final Movie mMovie;
 
-        public TrailersLoader(Context context, Movie movie) {
+        TrailersLoader(Context context, Movie movie) {
             super(context);
             mMovie = movie;
         }

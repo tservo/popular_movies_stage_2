@@ -8,17 +8,14 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.example.android.popularmovies.AppExecutors;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.Movie;
 import com.example.android.popularmovies.database.AppDatabase;
-import com.example.android.popularmovies.database.MovieDao;
 import com.example.android.popularmovies.utilities.TmdbConnector;
 
 import java.util.List;
-import java.util.prefs.AbstractPreferences;
 
 /**
  * Features a lot from this example:
@@ -29,9 +26,9 @@ public class MainMovieViewModel extends AndroidViewModel {
     private static final String TAG = MainMovieViewModel.class.getSimpleName();
 
 
-    private MediatorLiveData<List<Movie>> movies; // movies to be seen
-    private LiveData<List<Movie>> favoriteMovies; // movies stored as favorites
-    private AppDatabase database;
+    private final MediatorLiveData<List<Movie>> movies; // movies to be seen
+    private final LiveData<List<Movie>> favoriteMovies; // movies stored as favorites
+    private final AppDatabase database;
 
     // these will allow the async nature of the call to the db. ugly.
     private boolean dataReady = false;

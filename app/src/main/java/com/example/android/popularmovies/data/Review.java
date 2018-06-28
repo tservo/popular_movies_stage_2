@@ -40,7 +40,7 @@ public class Review {
      * @param content
      * @param url
      */
-    public Review(String id,int movieId, String author, String content, String url) {
+    private Review(String id, int movieId, String author, String content, String url) {
         mId = id;
         mMovieId = movieId;
         mAuthor = author;

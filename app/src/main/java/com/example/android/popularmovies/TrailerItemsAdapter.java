@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.android.popularmovies.data.Trailer;
 import com.example.android.popularmovies.utilities.DisplayHelper;
@@ -34,7 +33,7 @@ public class TrailerItemsAdapter extends RecyclerView.Adapter<TrailerItemsAdapte
     /**
      * stores whether we are showing two panes at once
      */
-    private boolean mTwoPane;
+    private final boolean mTwoPane;
 
     // store size of image here
 

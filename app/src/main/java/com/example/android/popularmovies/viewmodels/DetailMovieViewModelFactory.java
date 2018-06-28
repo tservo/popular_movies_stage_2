@@ -12,8 +12,8 @@ import com.example.android.popularmovies.database.AppDatabase;
  */
 public class DetailMovieViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     // completed (2) Add two member variables. One for the database and one for the taskId
-    private AppDatabase mDb;
-    private Movie mMovie;
+    private final AppDatabase mDb;
+    private final Movie mMovie;
 
     // completed (3) Initialize the member variables in the constructor with the parameters received
     public DetailMovieViewModelFactory(AppDatabase database, Movie movie) {

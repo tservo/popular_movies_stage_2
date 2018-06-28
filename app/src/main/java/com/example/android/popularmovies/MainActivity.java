@@ -3,9 +3,7 @@ package com.example.android.popularmovies;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -16,14 +14,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.Review;
-import com.example.android.popularmovies.database.AppDatabase;
 import com.example.android.popularmovies.utilities.DisplayHelper;
 import com.example.android.popularmovies.utilities.PreferencesHelper;
-import com.example.android.popularmovies.utilities.TmdbConnector;
 import com.example.android.popularmovies.viewmodels.MainMovieViewModel;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -223,8 +217,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-    /**
-     *     https://stackoverflow.com/questions/44309241/warning-this-asynctask-class-should-be-static-or-leaks-might-occur
+    /*
+          https://stackoverflow.com/questions/44309241/warning-this-asynctask-class-should-be-static-or-leaks-might-occur
      */
 //    class TMDBQueryTask extends AsyncTask<String,Void, List<Movie>> {
 //
