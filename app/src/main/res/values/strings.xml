@@ -27,4 +27,5 @@
 
     <!-- favorites -->
     <string name="favorites_label">Favorite</string>
+    <string name="play_trailer">Play Trailer</string>
 </resources>

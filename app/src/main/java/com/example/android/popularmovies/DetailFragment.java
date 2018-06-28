@@ -80,12 +80,6 @@ public class DetailFragment extends Fragment
      */
     private Movie mMovie;
 
-
-    /**
-     * The reviews list to show
-     */
-    private List<Review> mReviewList;
-
     /**
      * The trailers to show
      */
@@ -261,13 +255,17 @@ public class DetailFragment extends Fragment
      * into a linear layout.
      *
      */
-    private void addReviews() {
+    private void addReviews(List<Review> reviewList) {
+
+        // don't bother if it's null
+        if (null == reviewList) return;
+
 
         // and now the layout inflater
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
 
         // make view from resource.
-        for (Review review : mReviewList) {
+        for (Review review : reviewList) {
             View view = layoutInflater.inflate(R.layout.review_list_item,  mReviewLayout, false);
 
             View separator = layoutInflater.inflate(R.layout.separator, mReviewLayout, false);
@@ -348,8 +346,7 @@ public class DetailFragment extends Fragment
 
                 @Override
                 public void onLoadFinished(@NonNull Loader<List<Review>> loader, List<Review> data) {
-                    mReviewList = data;
-                    addReviews();
+                    addReviews(data);
                 }
 
                 @Override

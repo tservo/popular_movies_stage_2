@@ -1,19 +1,14 @@
 package com.example.android.popularmovies.viewmodels;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.android.popularmovies.AppExecutors;
 import com.example.android.popularmovies.data.Movie;
-import com.example.android.popularmovies.data.Review;
-import com.example.android.popularmovies.data.Trailer;
 import com.example.android.popularmovies.database.AppDatabase;
 
 import java.util.List;
@@ -22,8 +17,11 @@ public class DetailMovieViewModel extends ViewModel {
 
     private AppDatabase mDatabase;
     private MediatorLiveData<Movie> mMovie;
-    private MutableLiveData<List<Review>> mReviews;
-    private MutableLiveData<List<Trailer>> mTrailers;
+
+    private LiveData<Movie> mMovieLiveData; // store the call from the db here
+
+    // I could put the Reviews and Trailers here, perhaps with LiveData, but it's
+    // a bit complicated.
 
     /**
      *
@@ -37,13 +35,21 @@ public class DetailMovieViewModel extends ViewModel {
         // stay with original movie, but replace with the database call if possible.
         mMovie.setValue(movie);
 
-        final LiveData<Movie> movieLiveData = mDatabase.movieDao().loadMovieById(movie.getId());
-        mMovie.addSource(movieLiveData, new Observer<Movie>() {
+        /*
+            here we attempt to find the movie in the database.
+            the db call is asynchronous, so try to update the value
+            by adding a source to the db's livedata query.
+            if the database gives up information, then we can
+
+         */
+
+        mMovieLiveData = mDatabase.movieDao().loadMovieById(movie.getId());
+        mMovie.addSource(mMovieLiveData, new Observer<Movie>() {
             @Override
             public void onChanged(@Nullable Movie movie) {
                 if (null != movie) {
                     mMovie.postValue(movie);
-                    mMovie.removeSource(movieLiveData); // we have gotten our work done, let go now
+                    mMovie.removeSource(mMovieLiveData); // we have gotten our work done, let go now
                 }
             }
         });
